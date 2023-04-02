@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api-amanda", "api-amanda\api-amanda.csproj", "{E0CC52B0-6B0D-4928-9CB5-11E7DE32595C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E0CC52B0-6B0D-4928-9CB5-11E7DE32595C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0CC52B0-6B0D-4928-9CB5-11E7DE32595C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0CC52B0-6B0D-4928-9CB5-11E7DE32595C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0CC52B0-6B0D-4928-9CB5-11E7DE32595C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A7D132EF-BA82-4DB9-83EB-703CBA033B0A}
+	EndGlobalSection
+EndGlobal
