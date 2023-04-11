@@ -19,7 +19,8 @@ namespace api_amanda.Migrations
                     userId = table.Column<string>(type: "text", nullable: false),
                     uploadDate = table.Column<string>(type: "text", nullable: false),
                     firstTimeStamp = table.Column<long>(type: "bigint", nullable: false),
-                    lastTimeStamp = table.Column<long>(type: "bigint", nullable: false)
+                    lastTimeStamp = table.Column<long>(type: "bigint", nullable: false),
+                    fileTitle = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -36,8 +37,8 @@ namespace api_amanda.Migrations
                     mnc = table.Column<string>(type: "text", nullable: false),
                     lac = table.Column<string>(type: "text", nullable: false),
                     cellid = table.Column<string>(type: "text", nullable: false),
-                    lat = table.Column<string>(type: "text", nullable: false),
-                    lon = table.Column<string>(type: "text", nullable: false),
+                    lat = table.Column<decimal>(type: "numeric", nullable: false),
+                    lon = table.Column<decimal>(type: "numeric", nullable: false),
                     signal = table.Column<string>(type: "text", nullable: false),
                     measured_at = table.Column<long>(type: "bigint", nullable: false),
                     rating = table.Column<string>(type: "text", nullable: false),

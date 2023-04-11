@@ -1,5 +1,7 @@
-﻿using api_amanda.Services;
+﻿
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Events;
 
 namespace api_amanda {
     public class Startup {
@@ -10,13 +12,13 @@ namespace api_amanda {
 
         public IConfiguration Configuration { get; }
 
+        //services
         public void ConfigureServices(IServiceCollection services) {
+            //basic
             services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
           
-
             //cors
             services.AddCors(options =>
             {
@@ -29,10 +31,7 @@ namespace api_amanda {
 
             //db
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));           
-            services.AddScoped<ITableCsvService, TableCsvService>();
 
-            //automapper for creatig dtos from entities auto
-            services.AddAutoMapper(typeof(Startup));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
@@ -48,13 +47,16 @@ namespace api_amanda {
 
             app.UseCors();
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
 
             });
+
+           
+
         }
     }
 }

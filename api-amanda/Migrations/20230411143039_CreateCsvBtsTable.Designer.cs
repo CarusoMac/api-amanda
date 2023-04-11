@@ -11,8 +11,8 @@ using api_amanda;
 namespace api_amanda.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230402100415_Initial")]
-    partial class Initial
+    [Migration("20230411143039_CreateCsvBtsTable")]
+    partial class CreateCsvBtsTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,12 +24,32 @@ namespace api_amanda.Migrations
 
             NpgsqlModelBuilderExtensions.UseSerialColumns(modelBuilder);
 
+            modelBuilder.Entity("api_amanda.DTOs.CsvBtsDTO", b =>
+                {
+                    b.Property<string>("cellid")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("btsLat")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("btsLon")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("cellid");
+
+                    b.ToTable("BtsCoordiantes");
+                });
+
             modelBuilder.Entity("api_amanda.DTOs.CsvFileDTO", b =>
                 {
                     b.Property<string>("csvFileId")
                         .HasColumnType("text");
 
                     b.Property<string>("csvFileName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("fileTitle")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -81,13 +101,11 @@ namespace api_amanda.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("lat")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<decimal>("lat")
+                        .HasColumnType("numeric");
 
-                    b.Property<string>("lon")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<decimal>("lon")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("mcc")
                         .IsRequired()

@@ -10,12 +10,11 @@ namespace api_amanda {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) 
-            
             {
             modelBuilder.UseSerialColumns();
         }
-        //public DbSet<Log> Zaznamy { get; set; }
         public DbSet<CsvRecordDTO> Records { get; set; }
         public DbSet<CsvFileDTO> CsvFiles { get; set; }
+        public DbSet<CsvBtsDTO> BtsCoordiantes { get; set; }
     }
 }

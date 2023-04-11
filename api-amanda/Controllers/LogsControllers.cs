@@ -1,21 +1,8 @@
 ﻿using api_amanda.Entities;
 using Microsoft.AspNetCore.Mvc;
-//using System.Collections.Generic;
-//using System.Formats.Asn1;
-//using System.Globalization;
-//using CsvHelper;
 using Microsoft.EntityFrameworkCore;
 using api_amanda.DTOs;
-//using AutoMapper;
-//using Newtonsoft.Json;
-//using System.ComponentModel.DataAnnotations;
-//using Microsoft.AspNetCore.Hosting.Server;
-//using System.IO;
-//using Microsoft.AspNetCore.Hosting;
-//using Microsoft.AspNetCore.Http;
-//using System.Text.Json;
-//using System.Data;
-using api_amanda.Services;
+//using api_amanda.Services;
 
 namespace api_amanda.Controllers {
 
@@ -24,48 +11,94 @@ namespace api_amanda.Controllers {
     public class LogsController : ControllerBase {
         private readonly ApplicationDbContext context;
         private readonly IWebHostEnvironment webHostEnvironment;
-        private readonly ITableCsvService tableCsvService;
+        //private readonly ITableCsvService tableCsvService; v pripade implementace nezapomenout dopsat do cnstr
 
         //constructor
-        public LogsController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, ITableCsvService tableCsvService) {
+        public LogsController(ApplicationDbContext context, 
+            IWebHostEnvironment webHostEnvironment) {
             this.context = context;
             this.webHostEnvironment = webHostEnvironment;
-            this.tableCsvService = tableCsvService;
+            //this.tableCsvService = tableCsvService;
         }
 
-
-        [HttpGet("import")]
-        //public async Task<ActionResult<List<CsvFileDTO>>> Get([FromQuery] PaginationDTO paginationDTO) {
+        //list of files
+        [HttpGet("export")]
         public async Task<ActionResult<List<CsvFileDTO>>> Get() {
-
-            //var queryable = context.CsvFiles.AsQueryable();
-            //double count = await queryable.CountAsync();
-            //Response.Headers.Add("TotalRecordsAmount", count.ToString());
-            //var logs = await queryable.Skip((paginationDTO.Page - 1) * paginationDTO.RecordsPerPage)
-            //                          .Take(paginationDTO.RecordsPerPage)
-            //                          .ToListAsync();
             var logs = await context.CsvFiles.ToListAsync();
             return logs;
         }
 
-        //[HttpGet ("{id:int}")]
-        //public ActionResult<Log> Get(int Id) {
+        //title
+        [HttpGet("export/{csvFileId}")]
+        public async Task<ActionResult<CsvFileDTO>> Get(string csvFileId) {
 
-        //    var log = repository.GetLogById(Id);
-        //    if (log == null) {
-        //        logger.LogWarning($"Log with Id: {Id} not found");
-        //        return NotFound();
-        //    }s
-        //    return log;
+            var file = await context.CsvFiles.FirstOrDefaultAsync(f => f.csvFileId == csvFileId);
+            if (file == null) {
+                return NotFound();
+            }
+            return file;
+        }
+
+        ////getting all records related to specific file
+        //[HttpGet("{fileId}")]
+        //public ActionResult<IEnumerable<CsvRecordDTO>> GetRecordsByFileId(string fileId) {
+
+        //    //TODO validace
+        //    var records = context.Records
+        //                    .Where(r => r.csvFileId == fileId.ToString())
+        //                    .OrderBy(r => r.measured_at)
+        //                    .ToList();
+
+        //    return records;
         //}
 
+        //////getting all records related to specific file
+        [HttpGet("{fileId}")]
+        public ActionResult<IEnumerable<TrackInfoDTO>> GetRecordsByFileId(string fileId) {
 
+            //TODO validace
+            var records = (from rec in context.Records
+                           join bts in context.BtsCoordiantes
+                           on rec.cellid.Trim() equals bts.cellid.Trim() into gj
+                           from subquery in gj.DefaultIfEmpty()
+                           select new TrackInfoDTO{
+                               cellid = subquery.cellid,
+                               btsLat = subquery.btsLat,
+                               btsLon = subquery.btsLon,
+                               csvFileId = rec.csvFileId,
+                               recordId = rec.recordId,
+                               mcc = rec.mcc,
+                               mnc = rec.mnc,
+                               lac = rec.lac,
+                               lat = rec.lat,
+                               lon = rec.lon,
+                               signal = rec.signal,
+                               measured_at = rec.measured_at,
+                               rating = rec.rating,
+                               speed = rec.speed,
+                               direction = rec.direction,
+                               act = rec.act,
+                               ta = rec.ta,
+                               psc = rec.psc,
+                               tac = rec.tac,
+                               pci = rec.pci,
+                               sid = rec.sid,
+                               nid = rec.nid,
+                               bid = rec.bid
+                           })
+               .Where(x => x.csvFileId == fileId.ToString())
+               .OrderBy(x => x.measured_at)
+               .ToList();
+            return records;
+        }
+
+
+        //uploading records
         [HttpPost("upload")]
         public async Task<IActionResult> UploadCsvFile(IFormFile file) {
             if (file == null || file.Length == 0) {
                 return BadRequest("No file selected or file is empty.");
             }
-
             //creating temp directory
             var tempDirectoryName = Guid.NewGuid().ToString();
             var tempDirectoryPath = Path.Combine(webHostEnvironment.ContentRootPath, "TempTest", tempDirectoryName);
@@ -83,9 +116,6 @@ namespace api_amanda.Controllers {
             //assigning new ID for new file
             var csvId = Guid.NewGuid().ToString();
 
-            //creating table for files if not exist
-           // tableCsvService.CreateCsvTable();
-
             //looking for min and max timestamp 
             var minMeasuredAt = records.Min(r => r.measured_at);
             var maxMeasuredAt = records.Max(r => r.measured_at);
@@ -93,7 +123,7 @@ namespace api_amanda.Controllers {
             //assigning values to newly creating record
             foreach (var record in records) {
                 var tempId = Guid.NewGuid().ToString();
-                CsvRecordDTO newRecord = new CsvRecordDTO()
+                CsvRecordDTO newRecord = new()
                 {
                     csvFileId = csvId,
                     recordId = tempId,
@@ -121,30 +151,34 @@ namespace api_amanda.Controllers {
             }
 
             //assigning values to newly created File record
-            CsvFileDTO newFile = new CsvFileDTO()
+            CsvFileDTO newFile = new()
             {
                 csvFileId = csvId,
                 csvFileName = file.FileName,
                 userId = "user",
                 uploadDate = DateTime.Now.ToString(),
                 firstTimeStamp = minMeasuredAt,
-                lastTimeStamp = maxMeasuredAt
-
+                lastTimeStamp = maxMeasuredAt,
+                fileTitle = file.FileName
             };
-            
-
-            //saving changes
-            
                 context.CsvFiles.Add(newFile);
                 context.SaveChanges();
-            
-           
-
+            // delete temporary directory
+            Directory.Delete(tempDirectoryPath, true);
             return Ok("CSV file converted to JSON and sent to database successfully.");
         }
 
-
-
+        //custom title
+        [HttpPut("update/{csvFileId}")]
+        public async Task<ActionResult> UpdateFileTitle(string csvFileId, [FromBody] FileTitleDTO fileTitle) {
+            var file = await context.CsvFiles.FirstOrDefaultAsync(f => f.csvFileId == csvFileId);
+            if (file == null) {
+                return NotFound();
+            }
+            file.fileTitle = fileTitle.FileTitle;
+            await context.SaveChangesAsync();
+            return Ok();
+        }
 
     }
     }

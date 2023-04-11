@@ -14,6 +14,7 @@ namespace api_amanda.Entities {
                 var obj = new CsvRecord();
                 for (var j = 0; j < propertyCount; j++) {
                     var propertyName = propertyNames[j].Trim();
+                    
                     var propertyValue = values[j].Trim();
                     var property = typeof(CsvRecord).GetProperty(propertyName);
                     if (property != null) {
