@@ -40,7 +40,6 @@ namespace api_amanda {
                 app.UseSwaggerUI();
             }
 
-
             app.UseHttpsRedirection();
 
             app.UseRouting();

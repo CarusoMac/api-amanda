@@ -70,7 +70,6 @@ namespace api_amanda.Controllers {
                                nid = rec.nid,
                                bid = rec.bid
                            })
-               //.Where(x => x.csvFileId == fileId.ToString())
                .OrderBy(x => x.measured_at)
                .ToList();
             return records;
