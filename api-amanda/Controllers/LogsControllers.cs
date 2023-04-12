@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using api_amanda.DTOs;
-//using api_amanda.Services;
 
 namespace api_amanda.Controllers {
 
@@ -11,14 +10,12 @@ namespace api_amanda.Controllers {
     public class LogsController : ControllerBase {
         private readonly ApplicationDbContext context;
         private readonly IWebHostEnvironment webHostEnvironment;
-        //private readonly ITableCsvService tableCsvService; v pripade implementace nezapomenout dopsat do cnstr
 
         //constructor
         public LogsController(ApplicationDbContext context, 
             IWebHostEnvironment webHostEnvironment) {
             this.context = context;
             this.webHostEnvironment = webHostEnvironment;
-            //this.tableCsvService = tableCsvService;
         }
 
         //list of files
@@ -39,28 +36,15 @@ namespace api_amanda.Controllers {
             return file;
         }
 
-        ////getting all records related to specific file
-        //[HttpGet("{fileId}")]
-        //public ActionResult<IEnumerable<CsvRecordDTO>> GetRecordsByFileId(string fileId) {
-
-        //    //TODO validace
-        //    var records = context.Records
-        //                    .Where(r => r.csvFileId == fileId.ToString())
-        //                    .OrderBy(r => r.measured_at)
-        //                    .ToList();
-
-        //    return records;
-        //}
 
         //////getting all records related to specific file
         [HttpGet("{fileId}")]
         public ActionResult<IEnumerable<TrackInfoDTO>> GetRecordsByFileId(string fileId) {
-
-            //TODO validace
             var records = (from rec in context.Records
                            join bts in context.BtsCoordiantes
                            on rec.cellid.Trim() equals bts.cellid.Trim() into gj
                            from subquery in gj.DefaultIfEmpty()
+                           where rec.csvFileId == fileId //passing id as parameter should prevent injection
                            select new TrackInfoDTO{
                                cellid = subquery.cellid,
                                btsLat = subquery.btsLat,
@@ -86,7 +70,7 @@ namespace api_amanda.Controllers {
                                nid = rec.nid,
                                bid = rec.bid
                            })
-               .Where(x => x.csvFileId == fileId.ToString())
+               //.Where(x => x.csvFileId == fileId.ToString())
                .OrderBy(x => x.measured_at)
                .ToList();
             return records;
@@ -105,7 +89,6 @@ namespace api_amanda.Controllers {
             Directory.CreateDirectory(tempDirectoryPath);
 
             var filePath = Path.Combine(tempDirectoryPath, file.FileName);
-
             using (var stream = new FileStream(filePath, FileMode.Create)) {
                 await file.CopyToAsync(stream);
             }
