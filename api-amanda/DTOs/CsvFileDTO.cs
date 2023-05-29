@@ -9,7 +9,6 @@ namespace api_amanda.DTOs {
         public string uploadDate { get; set; }
         public long firstTimeStamp { get; set; }
         public long lastTimeStamp { get; set; }
-
         public string fileTitle { get; set; }
     }
 }

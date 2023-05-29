@@ -5,8 +5,7 @@ using Serilog.Events;
 
 namespace api_amanda {
     public class Startup {
-        public Startup(IConfiguration configuration)
-        {
+        public Startup(IConfiguration configuration) {
             Configuration = configuration;
         }
 
@@ -18,7 +17,7 @@ namespace api_amanda {
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-          
+
             //cors
             services.AddCors(options =>
             {
@@ -30,7 +29,7 @@ namespace api_amanda {
             });
 
             //db
-            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));           
+            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
         }
 
@@ -54,7 +53,7 @@ namespace api_amanda {
 
             });
 
-           
+
 
         }
     }
