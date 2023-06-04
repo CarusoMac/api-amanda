@@ -16,5 +16,6 @@ namespace api_amanda {
         public DbSet<CsvRecordDTO> Records { get; set; }
         public DbSet<CsvFileDTO> CsvFiles { get; set; }
         public DbSet<CsvBtsDTO> BtsCoordiantes { get; set; }
+        public DbSet<CsvBtsDTO> btstest { get; set; }
     }
 }
