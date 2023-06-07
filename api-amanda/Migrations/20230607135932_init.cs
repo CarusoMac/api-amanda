@@ -1,15 +1,33 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using NetTopologySuite.Geometries;
 
 #nullable disable
 
 namespace api_amanda.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:PostgresExtension:postgis", ",,");
+
+            migrationBuilder.CreateTable(
+                name: "BtsCoordinates",
+                columns: table => new
+                {
+                    cellid = table.Column<string>(type: "text", nullable: false),
+                    btsLat = table.Column<decimal>(type: "numeric", nullable: false),
+                    btsLon = table.Column<decimal>(type: "numeric", nullable: false),
+                    Location = table.Column<Point>(type: "geometry", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BtsCoordinates", x => x.cellid);
+                });
+
             migrationBuilder.CreateTable(
                 name: "CsvFiles",
                 columns: table => new
@@ -62,6 +80,9 @@ namespace api_amanda.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "BtsCoordinates");
+
             migrationBuilder.DropTable(
                 name: "CsvFiles");
 

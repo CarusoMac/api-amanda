@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using api_amanda;
 
@@ -11,8 +12,8 @@ using api_amanda;
 namespace api_amanda.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230602232002_btsTestTableCreation")]
-    partial class btsTestTableCreation
+    [Migration("20230607141906_locationTesting")]
+    partial class locationTesting
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,6 +23,7 @@ namespace api_amanda.Migrations
                 .HasAnnotation("ProductVersion", "7.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseSerialColumns(modelBuilder);
 
             modelBuilder.Entity("api_amanda.DTOs.CsvBtsDTO", b =>
@@ -29,15 +31,18 @@ namespace api_amanda.Migrations
                     b.Property<string>("cellid")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("btsLat")
-                        .HasColumnType("numeric");
+                    b.Property<Point>("Location")
+                        .HasColumnType("geometry");
 
-                    b.Property<decimal>("btsLon")
-                        .HasColumnType("numeric");
+                    b.Property<double>("btsLat")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("btsLon")
+                        .HasColumnType("double precision");
 
                     b.HasKey("cellid");
 
-                    b.ToTable("CsvBtsDTO");
+                    b.ToTable("BtsCoordinates");
                 });
 
             modelBuilder.Entity("api_amanda.DTOs.CsvFileDTO", b =>
@@ -77,6 +82,10 @@ namespace api_amanda.Migrations
                     b.Property<string>("recordId")
                         .HasColumnType("text");
 
+                    b.Property<Point>("RecLocation")
+                        .IsRequired()
+                        .HasColumnType("geometry");
+
                     b.Property<string>("act")
                         .IsRequired()
                         .HasColumnType("text");
@@ -101,11 +110,11 @@ namespace api_amanda.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("lat")
-                        .HasColumnType("numeric");
+                    b.Property<double>("lat")
+                        .HasColumnType("double precision");
 
-                    b.Property<decimal>("lon")
-                        .HasColumnType("numeric");
+                    b.Property<double>("lon")
+                        .HasColumnType("double precision");
 
                     b.Property<string>("mcc")
                         .IsRequired()

@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using api_amanda.DTOs;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.Algorithm;
 
 namespace api_amanda.Controllers {
 
@@ -41,7 +43,7 @@ namespace api_amanda.Controllers {
         [HttpGet("{fileId}")]
         public ActionResult<IEnumerable<TrackInfoDTO>> GetRecordsByFileId(string fileId) {
             var records = (from rec in context.Records
-                           join bts in context.BtsCoordiantes
+                           join bts in context.BtsCoordinates
                            on rec.cellid.Trim() equals bts.cellid.Trim() into gj
                            from subquery in gj.DefaultIfEmpty()
                            where rec.csvFileId == fileId //passing id as parameter should prevent injection
@@ -105,6 +107,7 @@ namespace api_amanda.Controllers {
             //assigning values to newly creating record
             foreach (var record in records) {
                 var tempId = Guid.NewGuid().ToString();
+                var tempCoordinate = new Coordinate(record.lat, record.lon);
                 CsvRecordDTO newRecord = new()
                 {
                     csvFileId = csvId,
@@ -127,7 +130,8 @@ namespace api_amanda.Controllers {
                     pci = record.pci,
                     sid = record.sid,
                     nid = record.nid,
-                    bid = record.bid
+                    bid = record.bid,
+                    RecLocation = new Point(tempCoordinate) { SRID = 4326 }
                 };
                 context.Records.Add(newRecord);
             }

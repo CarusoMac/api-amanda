@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using api_amanda;
 
@@ -11,8 +12,8 @@ using api_amanda;
 namespace api_amanda.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230602233508_btsTroubleShooting")]
-    partial class btsTroubleShooting
+    [Migration("20230607135932_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,12 +23,16 @@ namespace api_amanda.Migrations
                 .HasAnnotation("ProductVersion", "7.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseSerialColumns(modelBuilder);
 
             modelBuilder.Entity("api_amanda.DTOs.CsvBtsDTO", b =>
                 {
                     b.Property<string>("cellid")
                         .HasColumnType("text");
+
+                    b.Property<Point>("Location")
+                        .HasColumnType("geometry");
 
                     b.Property<decimal>("btsLat")
                         .HasColumnType("numeric");
@@ -37,7 +42,7 @@ namespace api_amanda.Migrations
 
                     b.HasKey("cellid");
 
-                    b.ToTable("BtsCoordiantes");
+                    b.ToTable("BtsCoordinates");
                 });
 
             modelBuilder.Entity("api_amanda.DTOs.CsvFileDTO", b =>

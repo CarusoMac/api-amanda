@@ -1,11 +1,13 @@
-﻿namespace api_amanda.Entities {
+﻿using NetTopologySuite.Geometries;
+
+namespace api_amanda.Entities {
     public class CsvRecord {
         public string mcc { get; set; } = null!;
         public string mnc { get; set; } = null!;
         public string lac { get; set; } = null!;
         public string cellid { get; set; } = null!;
-        public decimal lat { get; set; }
-        public decimal lon { get; set; }
+        public double lat { get; set; }
+        public double lon { get; set; }
         public string signal { get; set; } = null!;
         public long measured_at { get; set; }
         public string rating { get; set; }
@@ -19,5 +21,7 @@
         public string sid { get; set; } = null!;
         public string nid { get; set; } = null!;
         public string bid { get; set; } = null!;
+
+        public Point RecLocation { get; set; } = null!;
     }
 }
